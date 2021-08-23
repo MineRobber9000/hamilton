@@ -13,7 +13,7 @@ The goal of hamilton is to be a fully-featured successor to AutoSite Legacy whil
     - [X] Maybe refactor code slightly?
         - The original AutoSite (Legacy) was written as a Python script and then shoved into a main() function. Maybe split some parts out into their own functions?
  - [ ] Re-implement some Apricot features
-    - [ ] `#modified#` - Modified date, automatically generated from the file's modtime if not manually provided
+    - [X] `#modified#` - Modified date, automatically generated from the file's modtime if not manually provided
         - Why not?
     - [X] Attributes are processed twice, once on the template itself and again following conditionals being replaced
         - Not sure why this is done, but why not?

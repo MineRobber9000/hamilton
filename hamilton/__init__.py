@@ -3,7 +3,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup as bs
 from commonmark import commonmark
 from dirsync import sync
-import os, shutil, subprocess, re, sys, argparse, fnmatch
+import os, shutil, subprocess, re, sys, argparse, fnmatch, time
 
 DEFAULT_TEMPLATE = bs('<!DOCTYPE html><html><head><meta charset="utf-8"><title>[#title#]</title><meta property="og:type" content="website"><meta property="og:image" content=""><meta name="og:site_name" content="hamilton"><meta name="og:title" content="[#title#]"><meta name="og:description" content="[#description#]"><meta name="theme-color" content="#333333"></head><body><header><h2>[#title#]</h2></header><main>[#content#]</main><footer><hr><p>Generated with hamilton</p></footer></body></html>', "html.parser").prettify()
 
@@ -166,7 +166,7 @@ def process(path, template_cache={}):
             content = commonmark(content)
 
         # Default attributes
-        attribs = {'title': '', 'description': '', 'template': 'default'}
+        attribs = {'title': '', 'description': '', 'template': 'default', 'modified': time.strftime('%m/%d/%Y', time.gmtime(os.path.getmtime('in/'+path)))}
 
         # Handle legacy attributes (also known as a mess)
 
