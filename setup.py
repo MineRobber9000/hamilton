@@ -4,11 +4,11 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="AutoSite",
-    version="1.3",
-    author="dotcomboom",
-    author_email="dotcomboom@protonmail.com",
-    description="Keep all your website's pages under one template",
+    name="hamilton",
+    version="0.1.0",
+    author="khuxkm",
+    author_email="khuxkm+hamilton@tilde.team",
+    description="Maintaining AutoSite Legacy and improving it",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/dotcomboom/AutoSite",
@@ -32,6 +32,6 @@ setuptools.setup(
         "Topic :: Text Processing :: Markup :: HTML"
     ],
     entry_points={
-          'console_scripts': ['autosite=AutoSite.__init__:main'],
+          'console_scripts': ['hamilton=hamilton.__init__:main'],
     },
 )

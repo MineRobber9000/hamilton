@@ -15,7 +15,7 @@ def main():
 
     # Enable colors
     subprocess.call('', shell=True)
-    
+
     # Class of colors
     # https://stackoverflow.com/a/287944
     class bcolors:
@@ -32,7 +32,7 @@ def main():
     def dirname(path):
         # Replacement for os.path.dirname() which is broken on some versions of Python (3.5.2 and maybe others)
         return '/'.join(str(path).split('/')[:-1])
-    
+
     # Define arguments, help
     parser = argparse.ArgumentParser(add_help=True)
     parser.add_argument('-p', '--prettify', action='store_true', help='enables BeautifulSoup4 prettifying on output pages (experimental)')
@@ -50,7 +50,7 @@ def main():
         silent = True
     if args.dir:
         directory = args.dir
-    
+
     # Disable printing to console and enable auto mode with silent argument
     if silent:
         sys.stdout = open(os.devnull, 'w')
@@ -95,7 +95,7 @@ def main():
     else:
         # It doesn't
         print(bcolors.WARNING + 'includes folder does not exist yet' + bcolors.ENDC)
-    
+
     if prettify:
         print(bcolors.BOLD + bcolors.WARNING + 'Prettifying is enabled' + bcolors.ENDC)
 
@@ -186,7 +186,7 @@ def main():
                 print(bcolors.BOLD + 'Path: ' + bcolors.ENDC + bcolors.OKBLUE + path + bcolors.ENDC + ' ==> ' + bcolors.OKBLUE + path[:-2] + 'html' + bcolors.ENDC)
             else:
                 print(bcolors.BOLD + 'Path: ' + bcolors.ENDC + bcolors.OKBLUE + path + bcolors.ENDC)
-            
+
             # Open, read file
             f = open('in/' + path, 'r', encoding="utf8")
             filearray = f.readlines()
@@ -260,7 +260,7 @@ def main():
                 filearray = filearray[1:]
 
             template = ''
-            
+
             # Check if template is cached
             if attribs['template'] in template_cache.keys():
                 template = template_cache[attribs['template']]
@@ -315,7 +315,7 @@ def main():
             # [path!=pages/link.html]<a href="[#root#]pages/link.html">[/path!=]
             #    Linking
             # [path!=pages/link.html]</a>[/path!=]
-            
+
             # This works with any attribute.
 
             for atteql, value, text in re.findall(r'\[(.*)=(.*?)\](.*)\[\/\1.*\]', template):

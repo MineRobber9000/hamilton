@@ -1,52 +1,55 @@
-# AutoSite
-AutoSite helps you keep all of your website's pages in the same basic template. Managing a navigation bar, a footer, and even meta/OpenGraph tags across several pages is simple.
+# hamilton - static site generator
 
-### [Try it online on repl.it](https://repl.it/@dotcomboom/AutoSite)
-### [PyPI](https://pypi.org/project/AutoSite/)
-#### [Github](https://github.com/dotcomboom/AutoSite/)
-#### [Unofficial guide](https://autosite.neocities.org)
+> "Legacy, what is a legacy? It's planting seeds in a garden you never get to see."
+> - Lin Manuel Miranda, *The World Was Wide Enough*
 
-## Installation
-### As a package
-You can install AutoSite as a package. You can `cd` to the directory where you're building your site and build with the `autosite` command. It can be installed with the command `pip install autosite` or `pip3 install autosite` depending on your configuration.
-### Embedded
-[`__init__.py`](https://github.com/dotcomboom/AutoSite/blob/master/AutoSite/__init__.py) can also be run directly like the pre-PyPI AutoSite script. Just paste it into wherever you're working and you can run it from there. You'll need to install the requirements manually, which are in [the requirements.txt file](https://github.com/dotcomboom/AutoSite/blob/master/requirements.txt) with the `pip install -r requirements.txt` or `pip3 install -r requirements.txt` commands (provided that you downloaded or wrote that file to the same directory).
+A static site generator. Forked from [AutoSite Legacy](https://github.com/dotcomboom/AutoSite-Legacy).
 
-## Usage
-0. Run `autosite`. It will create a basic `default.html` template and the `in` and `includes` folders.
-1. Edit templates/default.html, filling in with these tags:
+The goal of hamilton is to be a fully-featured successor to AutoSite Legacy while incorporating some features of Apricot (the new AutoSite build engine) and some features I had previously coded as plugins.
 
-           [#content#] - The page's content.
-           [#path#] - The relative file path from root.
-           [#root#] - Use this to point to the site's root folder.
-           
-   You can also use any other attributes, like [#title#] or [#description#], provided that you define them in each page as below.
-           
-2. Add your pages to the "in" folder.
-      You can define a title and description, or any other attributes you wish, and tell AutoSite which template to use for the page at the top of the file like so:
-           
-           <!-- attrib title: Your title -->
-           <!-- attrib description: Your description -->
-           <!-- attrib template: default -->
-           <p>Everything under the above lines will replace [#content#] in template.html.</p>
-              
-    Put other site files in the "includes" folder. Input pages can be HTML or Markdown files, and use the same attribute syntax.
-    
-3. Run the script. How long it takes depends on how large your site is. Your pages will be in the "out" folder.
+## Roadmap
 
-## Conditional text
-Many sites have a navigation where if you're on a page, that page's name in the navigation is not a link. AutoSite has a feature that lets you replicate this. Consider the following example:
-	
-      [path!=index.html]<a href="[#root#]index.html">[/path!=]
-          Home
-      [path!=index.html]</a>[/path!=]
-	
-You can also omit the `!` symbol and it will only show if it is that page, like this:
-
-      [path=index.html]<p>[/path=]
-          This is the index page.
-      [path=index.html]<p>[/path=]
-	
-Conditional text is not limited to just file paths! Nearly any attribute can be used with conditional text.
-
-However, conditional text still has some issues. You can only have one instance of conditional text per line, it is not nestable, and not multiline either.
+ - [ ] Rebrand from "AutoSite" to "hamilton" throughout
+    - [ ] Maybe refactor code slightly?
+        - The original AutoSite (Legacy) was written as a Python script and then shoved into a main() function. Maybe split some parts out into their own functions?
+ - [ ] Re-implement some Apricot features
+    - [ ] `#modified#` - Modified date, automatically generated from the file's modtime if not manually provided
+        - Why not?
+    - [ ] Attributes are processed twice, once on the template itself and again following conditionals being replaced
+        - Not sure why this is done, but why not?
+    - [ ] `in/` renamed to `pages/`
+        - Just makes sense.
+ - [ ] Implement some QoL features
+    - [ ] Nested/multiline conditionals if I can get them working
+        - Would be a lot easier to mess around with and make the generated result look presentable
+    - [ ] Add a way to escape attributes
+        - For ease of documentation, mainly
+        - dcb actually [did take a pass at implementing this](https://dotcomboom.somnolescent.net/patio/2020/04/03/autosite-devlog-5-rc3-progress-update/), but the initial pass at it ended up breaking a PHP site of his that used it (not sure why he used it for a PHP page but whatever) so he removed it.
+            - Find a way to do it that doesn't break with PHP?
+    - [ ] Config file
+        - Allows defining attributes globally that can be overwritten in specific cases
+        - Also can be used for other build vars such as `baseurl` (for `#cleanurl#`, see below)
+    - [ ] Restructure how plugins work
+        - AutoSite Legacy implements plugins as basically just scripts that get ran inside the parsing of the file
+            - Nothing's wrong with this, but it could be handled more efficiently
+        - New plugins register functions at three stages:
+            - 1. Pre-processor, runs on the content after it gets massaged into HTML but before it gets substituted into the template
+            - 2. Blocktag (see below)
+            - 3. Post-processor, runs on the final product before it gets written to the file
+ - [ ] Implement some new features that I previously coded as plugins
+    - [ ] `#cleanurl#` - a clean URL for the page which doesn't include `index.html` if it exists at the end of the path
+        - generates cleaner URLs for opengraph
+        - basically `baseurl+path`, with the aforementioned if-case to remove index.html from the end
+        - requires the config file (see above) to define `baseurl`.
+            - alternatively, for a config-less solution that could be implemented in AutoSite proper, have a `[#cleanpath#]` that can be slapped after a base URL on the template side of things
+    - [ ] Unsee/Unpublish - prevents a file in `pages/` from generating a file in `out/`
+        - basically just nope out of file generation if `"unpublish" in attribs and attribs["unpublish"][0].lower() not in ('n','f')`
+            - `('n','f')` for "no" and "false"
+        - the plugin version couldn't nope out of file generation so instead it just overwrote the `template` var with an error page
+            - kept people from accessing a page they shouldn't be able to see but they could still tell it existed
+    - [ ] Blocktags - like attributes, but with extra scripting
+        - i implemented an entire system for this in a plugin despite only using it once (for navigation links in a fanfiction site)
+            - could be useful in other cases?
+        - preferably implemented as part of the plugin restructure (see above)
+        - by implementing this at the base level, avoid having to reinitialize the blocktag plugins every time a new page is being rendered
+            - also, if paired with the plugin restructure, this benefit will extend to all plugins of any type
