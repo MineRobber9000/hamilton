@@ -29,7 +29,6 @@ The goal of hamilton is to be a fully-featured successor to AutoSite Legacy whil
             - Find a way to do it that doesn't break with PHP?
     - [ ] Config file
         - Allows defining attributes globally that can be overwritten in specific cases
-        - Also can be used for other build vars such as `baseurl` (for `#cleanurl#`, see below)
     - [ ] Restructure how plugins work
         - AutoSite Legacy implements plugins as basically just scripts that get ran inside the parsing of the file
             - Nothing's wrong with this, but it could be handled more efficiently
@@ -38,11 +37,8 @@ The goal of hamilton is to be a fully-featured successor to AutoSite Legacy whil
             - 2. Blocktag (see below)
             - 3. Post-processor, runs on the final product before it gets written to the file
  - [ ] Implement some new features that I previously coded as plugins
-    - [ ] `#cleanurl#` - a clean URL for the page which doesn't include `index.html` if it exists at the end of the path
+    - [ ] `#cleanpath#` - a clean path for the page which doesn't include `index.html` if it exists at the end
         - generates cleaner URLs for opengraph
-        - basically `baseurl+path`, with the aforementioned if-case to remove index.html from the end
-        - requires the config file (see above) to define `baseurl`.
-            - alternatively, for a config-less solution that could be implemented in AutoSite proper, have a `[#cleanpath#]` that can be slapped after a base URL on the template side of things
     - [ ] Unsee/Unpublish - prevents a file in `pages/` from generating a file in `out/`
         - basically just nope out of file generation if `"unpublish" in attribs and attribs["unpublish"][0].lower() not in ('n','f')`
             - `('n','f')` for "no" and "false"
