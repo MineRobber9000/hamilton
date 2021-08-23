@@ -248,18 +248,17 @@ def process(path, template_cache={}):
         else:
             slash = '/'
 
-        # Set content, path, and root attributes
-        attribs['content'] = content
+        # Set path and root attributes
         attribs['path'] = path
         attribs['root'] = (('../' * path.count('/')) + slash).replace('//', '/')
 
-        # These special attributes still have higher priority, do them first anyway just in case ¯\_(ツ)_/¯
-        template = template.replace('[#content#]', attribs['content']).replace('[#path#]', attribs['path']).replace('[#root#]', attribs['root'])
-
+        # Attribute pass 1
         # For each attribute
         for key, value in attribs.items():
             # Slot it into the template
             template = template.replace('[#' + key + '#]', value)
+
+        template.replace("[#content#]",content)
 
         # Now let's handle conditional text
         # Conditional text is an experimental feature.
@@ -306,6 +305,12 @@ def process(path, template_cache={}):
             else:
                 # Make it blank
                 template = template.replace('[' + atteql + value + ']' + text + '[/' + atteql + ']', '')
+
+        # Attribute pass 2
+        # For each attribute
+        for key, value in attribs.items():
+            # Slot it into the template
+            template = template.replace('[#' + key + '#]', value)
 
         # If this is a markdown file
         if path.endswith('.md'):
