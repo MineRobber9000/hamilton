@@ -229,11 +229,8 @@ def process(path, template_cache={}):
 
             # If it doesn't exist, then create it from the default
             if not Path(template).is_file():
-                print(ansicolors.YELLOW + 'Creating ' + template + ansicolors.RESET)
-                # Write to file
-                with open(template, 'w') as f:
-                    f.write(DEFAULT_TEMPLATE)
-                    f.close()
+                print(ansicolors.YELLOW + 'Template', template, 'does not exist. Using default template instead.' + ansicolors.RESET)
+                template = 'templates/default.html'
 
             # Read template file
             f = open(template, 'r', encoding="utf8")

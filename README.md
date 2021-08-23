@@ -17,6 +17,7 @@ The goal of hamilton is to be a fully-featured successor to AutoSite Legacy whil
         - Why not?
     - [ ] Attributes are processed twice, once on the template itself and again following conditionals being replaced
         - Not sure why this is done, but why not?
+    - [X] Non-existant template defaults to `default` template rather than creating a *new* template from the original default
     - [ ] `in/` renamed to `pages/`
         - Just makes sense.
  - [ ] Implement some QoL features
