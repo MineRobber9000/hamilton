@@ -130,7 +130,7 @@ def walk_in_folder():
             # Check if file has extension
             if '.' in path:
                 # Check if it isn't common meta files used by OS X and Windows (or anything else we're configured to ignore)
-                if not any([fnmatch.fnmatch(path,pattern) for pattern in SKIP_IN_DIR]):
+                if not any([fnmatch.fnmatch(path,pattern) for pattern in SKIP_IN_FOLDER]):
                     # Add the file to the list
                     files.append((dirName + "/" + path).replace('\\', '/').replace('//', '/').replace('in/', '', 1))
     return files
@@ -258,7 +258,7 @@ def process(path, template_cache={}):
             # Slot it into the template
             template = template.replace('[#' + key + '#]', value)
 
-        template.replace("[#content#]",content)
+        template = template.replace("[#content#]",content)
 
         # Now let's handle conditional text
         # Conditional text is an experimental feature.
