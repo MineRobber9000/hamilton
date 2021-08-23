@@ -12,13 +12,13 @@ The goal of hamilton is to be a fully-featured successor to AutoSite Legacy whil
  - [X] Rebrand from "AutoSite" to "hamilton" throughout
     - [X] Maybe refactor code slightly?
         - The original AutoSite (Legacy) was written as a Python script and then shoved into a main() function. Maybe split some parts out into their own functions?
- - [ ] Re-implement some Apricot features
+ - [X] Re-implement some Apricot features
     - [X] `#modified#` - Modified date, automatically generated from the file's modtime if not manually provided
         - Why not?
     - [X] Attributes are processed twice, once on the template itself and again following conditionals being replaced
         - Not sure why this is done, but why not?
     - [X] Non-existant template defaults to `default` template rather than creating a *new* template from the original default
-    - [ ] `in/` renamed to `pages/`
+    - [X] `in/` renamed to `pages/`
         - Just makes sense.
  - [ ] Implement some QoL features
     - [ ] Nested/multiline conditionals if I can get them working

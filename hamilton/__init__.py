@@ -59,6 +59,7 @@ def dirname(path):
     return '/'.join(str(path).split('/')[:-1])
 
 def sanity_check_environment():
+    input_dir = "pages/"
     # Use default template
     template = Path('templates/default.html')
     # Check if exists
@@ -69,14 +70,20 @@ def sanity_check_environment():
         # It doesn't
         print(ansicolors.YELLOW + 'templates/default.html does not exist yet' + ansicolors.RESET)
 
-    indir = Path("in/")
+    indir = Path("pages/")
     # Check if indir exists
     if indir.is_dir():
         # It does
-        print(ansicolors.GREEN + 'in folder exists' + ansicolors.RESET)
+        print(ansicolors.GREEN + 'pages folder exists' + ansicolors.RESET)
     else:
         # It doesn't
-        print(ansicolors.YELLOW + 'in folder does not exist yet' + ansicolors.RESET)
+        # Does the `in/` folder exist?
+        if Path('in/').is_dir():
+            print(ansicolors.YELLOW + 'legacy in folder detected, using instead of pages' + ansicolors.RESET)
+            # set the input_dir variable for on return
+            input_dir = 'in/'
+        else:
+            print(ansicolors.YELLOW + 'pages folder does not exist yet' + ansicolors.RESET)
 
     includes = Path("includes/")
     # Check if includes folder exists
@@ -109,11 +116,11 @@ def sanity_check_environment():
                 f.close()
 
     # Create in folder if it doesn't exist
-    if not indir.is_dir():
+    if not indir.is_dir() and input_dir=='pages/':
         # It doesn't
-        print(ansicolors.YELLOW + 'Creating in folder' + ansicolors.RESET)
+        print(ansicolors.YELLOW + 'Creating pages folder' + ansicolors.RESET)
         # Make it
-        os.mkdir("in")
+        os.mkdir("pages")
 
     # Create includes folder if it doesn't exist
     if not includes.is_dir():
@@ -121,23 +128,24 @@ def sanity_check_environment():
         print(ansicolors.YELLOW + 'Creating includes folder' + ansicolors.RESET)
         # Make it
         os.mkdir("includes")
+    return input_dir
 
-def walk_in_folder():
+def walk_in_folder(input_dir):
     files = []
     # Go through each file in input folder
-    for dirName, subdirList, fileList in os.walk('in/'):
+    for dirName, subdirList, fileList in os.walk(input_dir):
         for path in os.listdir(dirName):
             # Check if file has extension
             if '.' in path:
                 # Check if it isn't common meta files used by OS X and Windows (or anything else we're configured to ignore)
                 if not any([fnmatch.fnmatch(path,pattern) for pattern in SKIP_IN_FOLDER]):
                     # Add the file to the list
-                    files.append((dirName + "/" + path).replace('\\', '/').replace('//', '/').replace('in/', '', 1))
+                    files.append((dirName + "/" + path).replace('\\', '/').replace('//', '/').replace(input_dir, '', 1))
     return files
 
-def process(path, template_cache={}):
+def process(path, input_dir, template_cache={}):
     # Check if it exists
-    if os.path.isfile('in/' + path):
+    if os.path.isfile(input_dir + path):
         # If it's markdown let user know it'll be translated into html
         if path.endswith('.md'):
             print(ansicolors.BOLD + 'Path: ' + ansicolors.RESET + ansicolors.GREEN + path + ansicolors.RESET + ' ==> ' + ansicolors.GREEN + path[:-2] + 'html' + ansicolors.RESET)
@@ -145,7 +153,7 @@ def process(path, template_cache={}):
             print(ansicolors.BOLD + 'Path: ' + ansicolors.RESET + ansicolors.GREEN + path + ansicolors.RESET)
 
         # Open, read file
-        f = open('in/' + path, 'r', encoding="utf8")
+        f = open(input_dir + path, 'r', encoding="utf8")
         filearray = f.readlines()
         contentarray = filearray
         # Filter out attributes from contentarray
@@ -166,7 +174,7 @@ def process(path, template_cache={}):
             content = commonmark(content)
 
         # Default attributes
-        attribs = {'title': '', 'description': '', 'template': 'default', 'modified': time.strftime('%m/%d/%Y', time.gmtime(os.path.getmtime('in/'+path)))}
+        attribs = {'title': '', 'description': '', 'template': 'default', 'modified': time.strftime('%m/%d/%Y', time.gmtime(os.path.getmtime(input_dir+path)))}
 
         # Handle legacy attributes (also known as a mess)
 
@@ -199,7 +207,7 @@ def process(path, template_cache={}):
         # Handle new attributes
 
         # Open, read file
-        f = open('in/' + path, 'r', encoding="utf8")
+        f = open(input_dir + path, 'r', encoding="utf8")
         filearray = f.readlines()
         f.close()
 
@@ -378,11 +386,11 @@ def main():
     print(ansicolors.BOLD + 'Path: ' + ansicolors.RESET + os.getcwd())
 
     # execute sanity check on environment (is there the folders we need? try to make them?)
-    sanity_check_environment()
+    input_dir = sanity_check_environment()
 
     # Gather files
     print(ansicolors.MAGENTA + ansicolors.BOLD + 'Gathering file paths' + ansicolors.RESET)
-    files = walk_in_folder()
+    files = walk_in_folder(input_dir)
     # Print it out
     print(files)
 
@@ -403,7 +411,7 @@ def main():
     print()
 
     # Run the process for each file
-    for path in files: process(path)
+    for path in files: process(path, input_dir)
 
     # All files processed
     print(ansicolors.BOLD + ansicolors.GREEN + 'Finished.' + ansicolors.RESET)
