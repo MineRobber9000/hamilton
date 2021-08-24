@@ -224,6 +224,11 @@ def process(path, input_dir, template_cache={}):
                 attribs[attrib] = value
             filearray = filearray[1:]
 
+        # Unpublish - allows preventing a file from rendering
+        if "unpublish" in attribs and attribs["unpublish"][0].lower() not in ('n', 'f'):
+            print(ansicolors.RED + "Skipping due to unpublish setting" + ansicolors.RESET)
+            return
+
         template = ''
 
         # Check if template is cached
