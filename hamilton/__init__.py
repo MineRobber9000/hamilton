@@ -260,6 +260,14 @@ def process(path, input_dir, template_cache={}):
         attribs['path'] = path
         attribs['root'] = (('../' * path.count('/')) + slash).replace('//', '/')
 
+        # cleanpath is just path with the index.html/index.md stripped
+        if path.endswith("index.html") or path.endswith("index.md"):
+	        attribs['cleanpath'] = dirname(path)
+        else:
+                attribs['cleanpath'] = path
+        # replace .md with .html here
+        if attribs['cleanpath'].endswith('.md'): attribs['cleanpath'] = attribs['cleanpath'].rsplit('.',1)[0]+".html"
+
         # Attribute pass 1
         # For each attribute
         for key, value in attribs.items():

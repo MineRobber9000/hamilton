@@ -37,7 +37,7 @@ The goal of hamilton is to be a fully-featured successor to AutoSite Legacy whil
             - 2. Blocktag (see below)
             - 3. Post-processor, runs on the final product before it gets written to the file
  - [ ] Implement some new features that I previously coded as plugins
-    - [ ] `#cleanpath#` - a clean path for the page which doesn't include `index.html` if it exists at the end
+    - [X] `#cleanpath#` - a clean path for the page which doesn't include `index.html` if it exists at the end
         - generates cleaner URLs for opengraph
     - [ ] Unsee/Unpublish - prevents a file in `pages/` from generating a file in `out/`
         - basically just nope out of file generation if `"unpublish" in attribs and attribs["unpublish"][0].lower() not in ('n','f')`
