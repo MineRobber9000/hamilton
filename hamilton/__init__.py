@@ -3,7 +3,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup as bs
 from commonmark import commonmark
 from dirsync import sync
-import os, shutil, subprocess, re, sys, argparse, fnmatch, time
+import os, shutil, subprocess, re, sys, argparse, fnmatch, time, toml
 
 DEFAULT_TEMPLATE = bs('<!DOCTYPE html><html><head><meta charset="utf-8"><title>[#title#]</title><meta property="og:type" content="website"><meta property="og:image" content=""><meta name="og:site_name" content="hamilton"><meta name="og:title" content="[#title#]"><meta name="og:description" content="[#description#]"><meta name="theme-color" content="#333333"></head><body><header><h2>[#title#]</h2></header><main>[#content#]</main><footer><hr><p>Generated with hamilton</p></footer></body></html>', "html.parser").prettify()
 
@@ -143,7 +143,7 @@ def walk_in_folder(input_dir):
                     files.append((dirName + "/" + path).replace('\\', '/').replace('//', '/').replace(input_dir, '', 1))
     return files
 
-def process(path, input_dir, template_cache={}):
+def process(path, input_dir, _attribs, template_cache={}):
     # Check if it exists
     if os.path.isfile(input_dir + path):
         # If it's markdown let user know it'll be translated into html
@@ -175,6 +175,7 @@ def process(path, input_dir, template_cache={}):
 
         # Default attributes
         attribs = {'title': '', 'description': '', 'template': 'default', 'modified': time.strftime('%m/%d/%Y', time.gmtime(os.path.getmtime(input_dir+path)))}
+        attribs.update(_attribs)
 
         # Handle legacy attributes (also known as a mess)
 
@@ -360,8 +361,18 @@ def process(path, input_dir, template_cache={}):
 def main():
     # Default parameters
     # Set these and they will always be active whether parameters are passed or not
+    boring = False
     silent = False
     directory = False # Set to path
+
+    config = {}
+    if Path('config.toml').is_file():
+        with open('config.toml') as f:
+            config = toml.load(f)
+        for key in config.get("build_settings",{}):
+            if key=="boring": boring=config["build_settings"][key]
+            if key=="silent": silent=config["build_settings"][key]
+            if key=="directory": directory=config["build_settings"][key]
 
     # Enable colors
     subprocess.call('', shell=True)
@@ -375,13 +386,17 @@ def main():
     args = parser.parse_args()
 
     if args.boring:
-        ansicolors.disable()
-    else:
-        ansicolors.enable()
+        boring = True
     if args.silent:
         silent = True
     if args.dir:
         directory = args.dir
+
+    # Disable colors with boring argument
+    if boring:
+        ansicolors.disable()
+    else:
+        ansicolors.enable()
 
     # Disable printing to console with silent argument
     if silent:
@@ -390,8 +405,6 @@ def main():
     # Change working directory if called for
     if directory:
         os.chdir(directory)
-
-    # Set and prettify default template
 
     # Even worse blatant self-advertising
     print(ansicolors.BOLD + HEADER + ansicolors.RESET)
@@ -424,7 +437,7 @@ def main():
     print()
 
     # Run the process for each file
-    for path in files: process(path, input_dir)
+    for path in files: process(path, input_dir, config.get("attributes",{}))
 
     # All files processed
     print(ansicolors.BOLD + ansicolors.GREEN + 'Finished.' + ansicolors.RESET)
