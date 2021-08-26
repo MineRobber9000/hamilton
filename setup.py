@@ -18,7 +18,8 @@ setuptools.setup(
         'bs4',
         'commonmark',
         'argparse',
-        'dirsync'
+        'dirsync',
+        'toml'
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -26,7 +27,8 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
         "Natural Language :: English",
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "License :: Public Domain",
         "Operating System :: OS Independent",
         "Topic :: Text Processing :: Markup :: HTML"
