@@ -20,10 +20,10 @@ The goal of hamilton is to be a fully-featured successor to AutoSite Legacy whil
     - [X] Non-existant template defaults to `default` template rather than creating a *new* template from the original default
     - [X] `in/` renamed to `pages/`
         - Just makes sense.
- - [ ] Implement some QoL features
+ - [X] Implement some QoL features
     - [X] Nested/multiline conditionals if I can get them working
         - Would be a lot easier to mess around with and make the generated result look presentable
-    - [ ] Add a way to escape attributes
+    - [X] Add a way to escape attributes
         - For ease of documentation, mainly
         - dcb actually [did take a pass at implementing this](https://dotcomboom.somnolescent.net/patio/2020/04/03/autosite-devlog-5-rc3-progress-update/), but the initial pass at it ended up breaking a PHP site of his that used it (not sure why he used it for a PHP page but whatever) so he removed it.
             - Find a way to do it that doesn't break with PHP?

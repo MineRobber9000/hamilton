@@ -21,9 +21,12 @@ SKIP_IN_FOLDER = [
     ".DS_Store" # common meta file in Mac OS X
 ] # add to this list if you need to prevent hamilton from processing a file (fnmatch syntax)
 
-ATTRIBUTES = re.compile(r'\[#([^#]+)#\]')
-CONDITIONALS = re.compile(r'\[([^=]*)=(.*?)\](.*)\[\/\1.*\]',re.DOTALL)
-BLOCKTAGS = re.compile(r"{#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
+ATTRIBUTES = re.compile(r'(?<!\\)\[#([^#]+)#\]')
+CONDITIONALS = re.compile(r'(?<!\\)\[([^=]*)=(.*?)\](.*[^\\])\[\/\1.*\]',re.DOTALL)
+BLOCKTAGS = re.compile(r"(?<!\\){#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
+ESCAPED_ATTRIBUTES = re.compile(r'\\\[#([^#]+)#\]')
+ESCAPED_CONDITIONALS = re.compile(r'\\\[([^=]*)=(.*?)\](.*)\\\[\/\1.*\]',re.DOTALL)
+ESCAPED_BLOCKTAGS = re.compile(r"\\{#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
 
 class ansicolors:
     BLACK="\033[30m"
@@ -404,6 +407,11 @@ def process(path, input_dir, _attribs, template_cache={}):
         if path.endswith('.md'):
             # Trim the md from it and make the output extension html
             path = path[:-2] + 'html'
+
+        # replace escaped attributes/conditionals/blocktags with their literal forms
+        template = ESCAPED_ATTRIBUTES.sub(lambda m: m.group(0)[1:],template)
+        template = ESCAPED_CONDITIONALS.sub(lambda m: m.group(0)[1:][::-1].replace("/[\\","/[")[::-1],template)
+        template = ESCAPED_BLOCKTAGS.sub(lambda m: m.group(0)[1:],template)
 
         # Postprocessors run on the entire output
         for postprocessor in sorted(REGPOSTPROCESSORS.keys()):
