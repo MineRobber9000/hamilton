@@ -384,7 +384,7 @@ def process(path, input_dir, _attribs, template_cache={}):
             # raw blocktag, for substitution later
             raw = "{#"+name+argslist+"#}"
             # fancy way of parsing arguments
-            argslist = dict([tuple(arg.split("=",1)) for arg in argslist[1:].split("|")])
+            argslist = dict([tuple(arg.split("=",1)) for arg in argslist[1:].split("|")]) if argslist else {}
             # make sure we have a blocktag for this case
             try:
                 assert name in REGBLOCKTAGS, f"Undefined blocktag {name!r}, skipping..."
