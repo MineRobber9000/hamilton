@@ -331,7 +331,7 @@ def process(path, input_dir, _attribs, template_cache={}):
 
         # Preprocessors run on the content alone, before substitution of variables
         for preprocessor in sorted(REGPREPROCESSORS.keys()):
-            content = REGPREPROCESSORS[preprocessor](content)
+            content = REGPREPROCESSORS[preprocessor](content,attribs)
 
         template = template.replace("[#content#]",content)
 
@@ -395,7 +395,7 @@ def process(path, input_dir, _attribs, template_cache={}):
             # make sure we have a blocktag for this case
             try:
                 assert name in REGBLOCKTAGS, f"Undefined blocktag {name!r}, skipping..."
-                result = REGBLOCKTAGS[name](**argslist)
+                result = REGBLOCKTAGS[name](attribs,**argslist)
                 res_type = type(result)
                 assert res_type==str, f"Expected string result from blocktag {name!r}, received {res_type!r} instead..."
             except AssertionError as e:
@@ -419,7 +419,7 @@ def process(path, input_dir, _attribs, template_cache={}):
 
         # Postprocessors run on the entire output
         for postprocessor in sorted(REGPOSTPROCESSORS.keys()):
-            template = REGPOSTPROCESSORS[postprocessor](template)
+            template = REGPOSTPROCESSORS[postprocessor](template,attribs)
 
         # Open file and write our contents
         f = open('out/' + path, 'w', encoding="utf8")
