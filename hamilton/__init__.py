@@ -89,6 +89,7 @@ def evalplugin(src):
     exec(src,globals(),locals())
 
 def initplugins():
+    if not Path("plugins/").is_dir(): return
     for plugin in os.listdir("plugins"):
         if not plugin.endswith(".py"): continue
         with open("plugins/"+plugin) as f:
