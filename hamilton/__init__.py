@@ -21,6 +21,10 @@ SKIP_IN_FOLDER = [
     ".DS_Store" # common meta file in Mac OS X
 ] # add to this list if you need to prevent hamilton from processing a file (fnmatch syntax)
 
+ATTRIBUTES = re.compile(r'\[#([^#]+)#\]')
+CONDITIONALS = re.compile(r'\[([^=]*)=(.*?)\](.*)\[\/\1.*\]',re.DOTALL)
+BLOCKTAGS = re.compile(r"{#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
+
 class ansicolors:
     BLACK="\033[30m"
     RED="\033[31m"
@@ -53,6 +57,43 @@ class ansicolors:
     def enable(self):
         if not hasattr(self,"_backup"): return
         self.__dict__.update(self._backup)
+
+# Plugin support
+REGPREPROCESSORS = {}
+REGPOSTPROCESSORS = {}
+REGBLOCKTAGS = {}
+
+def register(registry, name, func):
+    registry[name]=func
+
+def preprocessor(name):
+    def __wrapper(func):
+        register(REGPREPROCESSORS,name,func)
+        return func
+    return __wrapper
+
+def blocktag(name):
+    def __wrapper(func):
+        register(REGBLOCKTAGS,name,func)
+        return func
+    return __wrapper
+
+def postprocessor(name):
+    def __wrapper(func):
+        register(REGPOSTPROCESSORS,name,func)
+        return func
+    return __wrapper
+
+def evalplugin(src):
+    global preprocessor, blocktag, postprocessor
+    exec(src,globals(),locals())
+
+def initplugins():
+    for plugin in os.listdir("plugins"):
+        if not plugin.endswith(".py"): continue
+        with open("plugins/"+plugin) as f:
+            evalplugin(f.read())
+# End plugin support
 
 def dirname(path):
     # Replacement for os.path.dirname() which is broken on some versions of Python (3.5.2 and maybe others)
@@ -142,6 +183,13 @@ def walk_in_folder(input_dir):
                     # Add the file to the list
                     files.append((dirName + "/" + path).replace('\\', '/').replace('//', '/').replace(input_dir, '', 1))
     return files
+
+def replace_attributes(attribs):
+    def __replace(m):
+        attrib = m.group(1)
+        if attrib not in attribs: return m.group(0) # full match, maintains backwards compat of not replacing undefined attributes
+        return attribs[attrib]
+    return __replace
 
 def process(path, input_dir, _attribs, template_cache={}):
     # Check if it exists
@@ -275,10 +323,11 @@ def process(path, input_dir, _attribs, template_cache={}):
         if attribs['cleanpath'].endswith('.md'): attribs['cleanpath'] = attribs['cleanpath'].rsplit('.',1)[0]+".html"
 
         # Attribute pass 1
-        # For each attribute
-        for key, value in attribs.items():
-            # Slot it into the template
-            template = template.replace('[#' + key + '#]', value)
+        template = ATTRIBUTES.sub(replace_attributes(attribs),template)
+
+        # Preprocessors run on the content alone, before substitution of variables
+        for preprocessor in sorted(REGPREPROCESSORS.keys()):
+            content = REGPREPROCESSORS[preprocessor](content)
 
         template = template.replace("[#content#]",content)
 
@@ -293,7 +342,8 @@ def process(path, input_dir, _attribs, template_cache={}):
 
         # This works with any attribute.
 
-        for atteql, value, text in re.findall(r'\[(.*)=(.*?)\](.*)\[\/\1.*\]', template):
+        while (m:=CONDITIONALS.search(template)):
+            atteql, value, text = m.groups()
             # Add equal sign to =
             # atteql is the combination of the attribute and the equal sign
             # If atteql was !, for (if not) then it would be !=, if it was nothing, it'd be =. absolute genius!!!
@@ -328,26 +378,35 @@ def process(path, input_dir, _attribs, template_cache={}):
                 # Make it blank
                 template = template.replace('[' + atteql + value + ']' + text + '[/' + atteql + ']', '')
 
+        # now for blocktags
+        for name, argslist in BLOCKTAGS.findall(template):
+            # raw blocktag, for substitution later
+            raw = "{#"+name+argslist+"#}"
+            # fancy way of parsing arguments
+            argslist = dict([tuple(arg.split("=",1)) for arg in argslist[1:].split("|")])
+            # make sure we have a blocktag for this case
+            try:
+                assert name in REGBLOCKTAGS, f"Undefined blocktag {name!r}, skipping..."
+                result = REGBLOCKTAGS[name](**argslist)
+                res_type = type(result)
+                assert res_type==str, f"Expected string result from blocktag {name!r}, received {res_type!r} instead..."
+            except AssertionError as e:
+                print(f"ERROR: {e.args[0]}")
+                continue # don't crash on undefined/errant blocktags
+            # if it passes the checks, run it
+            template = template.replace(raw,result)
+
         # Attribute pass 2
-        # For each attribute
-        for key, value in attribs.items():
-            # Slot it into the template
-            template = template.replace('[#' + key + '#]', value)
+        template = ATTRIBUTES.sub(replace_attributes(attribs),template)
 
         # If this is a markdown file
         if path.endswith('.md'):
             # Trim the md from it and make the output extension html
             path = path[:-2] + 'html'
 
-        # Check if there is a plugin directory
-        if Path('plugins/').is_dir():
-            # For each plugin
-            for plugin in os.listdir('plugins/'):
-                # Execute the code inside
-                print(ansicolors.BOLD + ansicolors.YELLOW + 'Running plugin', plugin + ansicolors.RESET)
-                lcls = locals()
-                ran = exec(open('plugins/' + plugin).read(), globals(), lcls)
-                template = lcls['template']
+        # Postprocessors run on the entire output
+        for postprocessor in sorted(REGPOSTPROCESSORS.keys()):
+            template = REGPOSTPROCESSORS[postprocessor](template)
 
         # Open file and write our contents
         f = open('out/' + path, 'w', encoding="utf8")
@@ -413,6 +472,10 @@ def main():
 
     # execute sanity check on environment (is there the folders we need? try to make them?)
     input_dir = sanity_check_environment()
+
+    # init plugins
+    print(ansicolors.MAGENTA + 'Initializing plugins' + ansicolors.RESET)
+    initplugins()
 
     # Gather files
     print(ansicolors.MAGENTA + ansicolors.BOLD + 'Gathering file paths' + ansicolors.RESET)

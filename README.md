@@ -21,7 +21,7 @@ The goal of hamilton is to be a fully-featured successor to AutoSite Legacy whil
     - [X] `in/` renamed to `pages/`
         - Just makes sense.
  - [ ] Implement some QoL features
-    - [ ] Nested/multiline conditionals if I can get them working
+    - [X] Nested/multiline conditionals if I can get them working
         - Would be a lot easier to mess around with and make the generated result look presentable
     - [ ] Add a way to escape attributes
         - For ease of documentation, mainly
@@ -29,14 +29,14 @@ The goal of hamilton is to be a fully-featured successor to AutoSite Legacy whil
             - Find a way to do it that doesn't break with PHP?
     - [X] Config file
         - Allows defining attributes globally that can be overwritten in specific cases
-    - [ ] Restructure how plugins work
+    - [X] Restructure how plugins work
         - AutoSite Legacy implements plugins as basically just scripts that get ran inside the parsing of the file
             - Nothing's wrong with this, but it could be handled more efficiently
         - New plugins register functions at three stages:
             - 1. Pre-processor, runs on the content after it gets massaged into HTML but before it gets substituted into the template
             - 2. Blocktag (see below)
             - 3. Post-processor, runs on the final product before it gets written to the file
- - [ ] Implement some new features that I previously coded as plugins
+ - [X] Implement some new features that I previously coded as plugins
     - [X] `#cleanpath#` - a clean path for the page which doesn't include `index.html` if it exists at the end
         - generates cleaner URLs for opengraph
     - [X] Unsee/Unpublish - prevents a file in `pages/` from generating a file in `out/`
@@ -44,7 +44,7 @@ The goal of hamilton is to be a fully-featured successor to AutoSite Legacy whil
             - `('n','f')` for "no" and "false"
         - the plugin version couldn't nope out of file generation so instead it just overwrote the `template` var with an error page
             - kept people from accessing a page they shouldn't be able to see but they could still tell it existed
-    - [ ] Blocktags - like attributes, but with extra scripting
+    - [X] Blocktags - like attributes, but with extra scripting
         - i implemented an entire system for this in a plugin despite only using it once (for navigation links in a fanfiction site)
             - could be useful in other cases?
         - preferably implemented as part of the plugin restructure (see above)
