@@ -22,10 +22,10 @@ SKIP_IN_FOLDER = [
 ] # add to this list if you need to prevent hamilton from processing a file (fnmatch syntax)
 
 ATTRIBUTES = re.compile(r'(?<!\\)\[#([^#]+)#\]')
-CONDITIONALS = re.compile(r'(?<!\\)\[([^=]*)=(.*?)\](.*[^\\])\[\/\1.*\]',re.DOTALL)
+CONDITIONALS = re.compile(r'(?<!\\)\[([^=]*)=(.*?)\](.*[^\\])\[\/\1.*\]')
 BLOCKTAGS = re.compile(r"(?<!\\){#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
 ESCAPED_ATTRIBUTES = re.compile(r'\\\[#([^#]+)#\]')
-ESCAPED_CONDITIONALS = re.compile(r'\\\[([^=]*)=(.*?)\](.*)\\\[\/\1.*\]',re.DOTALL)
+ESCAPED_CONDITIONALS = re.compile(r'\\\[([^=]*)=(.*?)\](.*)\\\[\/\1.*\]')
 ESCAPED_BLOCKTAGS = re.compile(r"\\{#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
 
 class ansicolors:
@@ -364,10 +364,14 @@ def process(path, input_dir, _attribs, template_cache={}):
             for key, val in attribs.items():
                 # If it's the one we're looking for
                 if key == attribute:
-                    # If the value is equal
-                    if val == value:
-                        # Trigger
+                    # If the provided value is empty (not bool(value)), just consider it triggered
+                    if not value:
                         trigger = True
+                    else:
+                        # If the value is equal
+                        if val == value:
+                            # Trigger
+                            trigger = True
 
             # Check if we're going to display if it is NOT equal
             if equals == '!=':
