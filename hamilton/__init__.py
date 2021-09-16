@@ -337,7 +337,7 @@ def process(path, input_dir, _attribs, template_cache={}):
 
         # Now let's handle conditional text
         # Conditional text is an experimental feature.
-        # Only one is supported per line because of some regex whatever, and stuff might make it trip up
+        # I kind of fixed it up a little. Conditionals can now be multiline, and nested.
         # Example:
 
         # [path!=pages/link.html]<a href="[#root#]pages/link.html">[/path!=]
