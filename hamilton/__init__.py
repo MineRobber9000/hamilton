@@ -481,6 +481,17 @@ def main():
         except FileNotFoundError:
             os.makedirs(directory)
             os.chdir(directory)
+        if Path('config.toml').is_file():
+            with open('config.toml') as f:
+                config2 = toml.load(f)
+            for key in config2.get("build_settings",{}):
+                if key=="boring" and not args.boring: boring=config["build_settings"][key]
+                if key=="silent" and not args.silent: silent=config["build_settings"][key]
+                # ignore directory directive in cascading TOML file
+            if "attributes" not in config2: config2["attributes"] = {}
+            # prefer the original config's attributes
+            config2["attributes"].update(config.get("attributes",{}))
+            config["attributes"]=config2["attributes"]
 
     # Even worse blatant self-advertising
     print(ansicolors.BOLD + HEADER + ansicolors.RESET)
