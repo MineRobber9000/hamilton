@@ -320,7 +320,7 @@ def process(path, input_dir, _attribs, template_cache={}):
 
         # cleanpath is just path with the index.html/index.md stripped
         if path.endswith("index.html") or path.endswith("index.md"):
-	        attribs['cleanpath'] = dirname(path)
+            attribs['cleanpath'] = dirname(path)
         else:
                 attribs['cleanpath'] = path
         # replace .md with .html here
@@ -476,7 +476,11 @@ def main():
 
     # Change working directory if called for
     if directory:
-        os.chdir(directory)
+        try:
+            os.chdir(directory)
+        except FileNotFoundError:
+            os.makedirs(directory)
+            os.chdir(directory)
 
     # Even worse blatant self-advertising
     print(ansicolors.BOLD + HEADER + ansicolors.RESET)
