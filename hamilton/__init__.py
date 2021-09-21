@@ -22,10 +22,10 @@ SKIP_IN_FOLDER = [
 ] # add to this list if you need to prevent hamilton from processing a file (fnmatch syntax)
 
 ATTRIBUTES = re.compile(r'(?<!\\)\[#([^#]+)#\]')
-CONDITIONALS = re.compile(r'(?<!\\)\[([^=]*)=(.*?)\]([^\[]*[^\\\[])\[\/\1.*\]',re.DOTALL)
+CONDITIONALS = re.compile(r'(?<!\\)\[([^=]*)=([^\]]*?)\]([^\[]*[^\\\[])\[\/\1.*\]',re.DOTALL)
 BLOCKTAGS = re.compile(r"(?<!\\){#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
 ESCAPED_ATTRIBUTES = re.compile(r'\\\[#([^#]+)#\]')
-ESCAPED_CONDITIONALS = re.compile(r'\\\[([^=]*)=(.*?)\]([^\[]*)\\\[\/\1.*\]',re.DOTALL)
+ESCAPED_CONDITIONALS = re.compile(r'\\\[([^=]*)=([^\]]*?)\]([^\[]*)\\\[\/\1.*\]',re.DOTALL)
 ESCAPED_BLOCKTAGS = re.compile(r"\\{#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
 
 class ansicolors:
