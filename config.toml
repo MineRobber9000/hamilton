@@ -1,0 +1,5 @@
+[build_settings]
+directory="docs"
+
+[attributes]
+base_url="https://hamilton-ssg.github.io/"

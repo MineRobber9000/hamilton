@@ -1,0 +1,14 @@
+language: python
+python:
+  - "3.9"
+install:
+  - pip install -r requirements.txt
+script:
+  - python hamilton/__init__.py
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  repo: hamilton-ssg/hamilton-ssg.github.io
+  target_branch: main
+  local_dir: docs/out
