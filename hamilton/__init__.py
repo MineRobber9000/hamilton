@@ -21,6 +21,10 @@ SKIP_IN_FOLDER = [
     ".DS_Store" # common meta file in Mac OS X
 ] # add to this list if you need to prevent hamilton from processing a file (fnmatch syntax)
 
+# maximum amount of conditionals to process in one file
+# if processing continues past this point, an exception will be raised (probably means broken conditional; they're still hacky despite my best efforts)
+MAX_CONDITIONALS_PROCESS = 250
+
 ATTRIBUTES = re.compile(r'(?<!\\)\[#([^#]+)#\]')
 CONDITIONALS = re.compile(r'(?<!\\)\[([^=]*)=([^\]]*?)\]([^\[]*[^\\\[])\[\/\1.*\]',re.DOTALL)
 BLOCKTAGS = re.compile(r"(?<!\\){#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
@@ -346,7 +350,11 @@ def process(path, input_dir, _attribs, template_cache={}):
 
         # This works with any attribute.
 
+
+        conditionals_count = 0
         while (m:=CONDITIONALS.search(template)):
+            assert conditionals_count<MAX_CONDITIONALS, "Too many conditionals parsed! Try rewriting your conditional statements."
+            conditionals_count += 1
             atteql, value, text = m.groups()
             # Add equal sign to =
             # atteql is the combination of the attribute and the equal sign
