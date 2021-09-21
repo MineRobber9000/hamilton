@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# This commit-msg hook automatically appends "[ci skip]" to any commits that don't affect the docs.
+# This is because I haven't written unit tests yet, and so the only thing the CI build would be responsible for is the docs site.
+
+FILES_CHANGING=$(git diff --cached --name-only --diff-filter=ACM)
+DOCS_CHANGES=$(echo $FILES_CHANGING | grep -Ei "^docs/")
+if [ -n $DOCS_CHANGES ]
+then
+	DOCS_CHANGES=0
+fi
+
+if [ $DOCS_CHANGES -lt 1 ]
+then
+	printf "\n\n[ci skip]" >> $1
+fi
