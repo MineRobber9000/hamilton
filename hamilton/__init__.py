@@ -23,7 +23,7 @@ SKIP_IN_FOLDER = [
 
 # maximum amount of conditionals to process in one file
 # if processing continues past this point, an exception will be raised (probably means broken conditional; they're still hacky despite my best efforts)
-MAX_CONDITIONALS_PROCESS = 250
+MAX_CONDITIONALS = 250
 
 ATTRIBUTES = re.compile(r'(?<!\\)\[#([^#]+)#\]')
 CONDITIONALS = re.compile(r'(?<!\\)\[([^=]*)=([^\]]*?)\]([^\[]*[^\\\[])\[\/\1.*\]',re.DOTALL)
