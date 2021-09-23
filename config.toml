@@ -3,3 +3,4 @@ directory="docs"
 
 [attributes]
 base_url="https://hamilton-ssg.github.io/"
+image="logo.png"
