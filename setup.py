@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="hamilton",
+    name="hamilton-ssg",
     version="0.1.0",
     author="khuxkm",
     author_email="khuxkm+hamilton@tilde.team",
-    description="Maintaining AutoSite Legacy and improving it",
+    description="static sites in a pinch",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/dotcomboom/AutoSite",
+    url="https://github.com/hamilton-ssg/hamilton",
     packages=setuptools.find_packages(),
     install_requires=[
         'pathlib',
