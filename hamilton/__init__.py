@@ -26,10 +26,10 @@ SKIP_IN_FOLDER = [
 MAX_CONDITIONALS = 250
 
 ATTRIBUTES = re.compile(r'(?<!\\)\[#([^#]+)#\]')
-CONDITIONALS = re.compile(r'(?<!\\)\[([^=]*)=([^\]]*?)\]([^\[]*[^\\\[])\[\/\1.*\]',re.DOTALL)
+CONDITIONALS = re.compile(r'(?<!\\)\[([^=]*)=([^\]]*?)\](.*?)\[\/\1.*\]',re.DOTALL)
 BLOCKTAGS = re.compile(r"(?<!\\){#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
 ESCAPED_ATTRIBUTES = re.compile(r'\\\[#([^#]+)#\]')
-ESCAPED_CONDITIONALS = re.compile(r'\\\[([^=]*)=([^\]]*?)\]([^\[]*)\\\[\/\1.*\]',re.DOTALL)
+ESCAPED_CONDITIONALS = re.compile(r'\\\[([^=]*)=([^\]]*?)\](.*?)\\\[\/\1.*\]',re.DOTALL)
 ESCAPED_BLOCKTAGS = re.compile(r"\\{#([^|]+)((?:\|[A-Za-z0-9]+=[^|]+)*)#}")
 
 class ansicolors:
